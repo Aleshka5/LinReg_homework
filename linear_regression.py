@@ -66,12 +66,13 @@ class LinearRegression:
             Возвращает экземпляр класса с обученными весами.
 
         """
-        for _ in range(self.max_iter):
+        # Loss до начала первого шага
+        loss = self.calc_loss(x, y)
+        self.loss_history.append(loss)
+
+        for iter in range(self.max_iter):
             # Вычисляем градиент
             gradient = self.descent.calc_gradient(x, y)
-
-            # Сохраняем старые веса
-            w_old = self.descent.w.copy()
 
             # Обновляем веса
             weight_diff = self.descent.update_weights(gradient)
@@ -82,6 +83,7 @@ class LinearRegression:
 
             # Проверяем критерий останова
             if np.linalg.norm(weight_diff) ** 2 < self.tolerance:
+                self.max_iter = iter
                 break
 
         return self

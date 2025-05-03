@@ -277,9 +277,8 @@ class VanillaGradientDescent(BaseDescent):
             Разность весов (w_{k + 1} - w_k).
         """
         learning_rate = self.lr()
-        w_old = self.w.copy()
         self.w -= learning_rate * gradient
-        return self.w - w_old
+        return (-1) * learning_rate * gradient
 
     def calc_gradient(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
         """
@@ -463,13 +462,9 @@ class MomentumDescent(VanillaGradientDescent):
         # Обновление момента
         self.h = self.alpha * self.h + learning_rate * gradient
 
-        # Сохранение старых весов
-        w_old = self.w.copy()
-
         # Обновление весов с учетом момента
         self.w -= self.h
-
-        return self.w - w_old
+        return (-1) * self.h
 
 
 class Adam(VanillaGradientDescent):
@@ -560,13 +555,9 @@ class Adam(VanillaGradientDescent):
         m_hat = self.m / (1 - self.beta_1**self.iteration)
         v_hat = self.v / (1 - self.beta_2**self.iteration)
 
-        # Сохраняем старые веса
-        w_old = self.w.copy()
-
         # Обновляем веса
         self.w -= learning_rate * m_hat / (np.sqrt(v_hat) + self.eps)
-
-        return self.w - w_old
+        return (-1) * learning_rate * m_hat / (np.sqrt(v_hat) + self.eps)
 
 
 class BaseDescentReg(BaseDescent):
