@@ -217,18 +217,8 @@ class BaseDescent:
         if self.loss_function == LossFunction.MSE:
             return np.mean(error**2)
 
-        elif self.loss_function == LossFunction.MAE:
-            return np.mean(np.abs(error))
-
         elif self.loss_function == LossFunction.LogCosh:
             return np.mean(np.log(np.cosh(error)))
-
-        elif self.loss_function == LossFunction.Huber:
-            delta = 1.0
-            is_small_error = np.abs(error) <= delta
-            squared_loss = 0.5 * error**2
-            linear_loss = delta * (np.abs(error) - 0.5 * delta)
-            return np.mean(np.where(is_small_error, squared_loss, linear_loss))
 
         else:
             raise ValueError(f"Unknown loss function: {self.loss_function}")
@@ -302,17 +292,8 @@ class VanillaGradientDescent(BaseDescent):
         if self.loss_function == LossFunction.MSE:
             return 2 * x.T @ error / len(y)
 
-        elif self.loss_function == LossFunction.MAE:
-            return x.T @ np.sign(error) / len(y)
-
         elif self.loss_function == LossFunction.LogCosh:
             return x.T @ np.tanh(error) / len(y)
-
-        elif self.loss_function == LossFunction.Huber:
-            delta = 1.0
-            is_small_error = np.abs(error) <= delta
-            grad = np.where(is_small_error, error, delta * np.sign(error))
-            return x.T @ grad / len(y)
 
         else:
             raise ValueError(f"Unknown loss function: {self.loss_function}")
@@ -378,17 +359,8 @@ class StochasticDescent(VanillaGradientDescent):
         if self.loss_function == LossFunction.MSE:
             return 2 * x_batch.T @ error / self.batch_size
 
-        elif self.loss_function == LossFunction.MAE:
-            return x_batch.T @ np.sign(error) / self.batch_size
-
         elif self.loss_function == LossFunction.LogCosh:
             return x_batch.T @ np.tanh(error) / self.batch_size
-
-        elif self.loss_function == LossFunction.Huber:
-            delta = 1.0
-            is_small_error = np.abs(error) <= delta
-            grad = np.where(is_small_error, error, delta * np.sign(error))
-            return x_batch.T @ grad / self.batch_size
 
         else:
             raise ValueError(f"Unknown loss function: {self.loss_function}")
